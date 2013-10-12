@@ -1,0 +1,32 @@
+1. The graph provides a definition of the network
+2. The network manages the components and ports
+
+3. The ports are generators/coroutines that talk to each other.
+    a. When the out generator sends informataion, the in generator calls a function defined in its component
+    b. When function will return either
+    
+4. The components are black boxes, with internal data and functions attached to ports
+    a. When the component is created, initialize all the ports
+    b. When a function associated with a port is called
+        1. Do operations on the data
+        2. Possibly send data from other ports
+
+When the network starts, it will send the first initial data to the first port.
+    The port will send the data to a function defines in the component.
+        The function will perform operations on the data
+        The function may send data through other ports
+        
+
+class network:
+    def __init__(self, graph):
+        create node
+        connect edges
+        
+        create scheduler
+        add inital data to scheduler
+        
+    def run(self):
+        call scheduler.mainloop()
+        
+    def send_data(self, node, port, data):
+        yield node.port.send(data)
