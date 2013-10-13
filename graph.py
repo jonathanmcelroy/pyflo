@@ -54,6 +54,10 @@ class Graph:
 
     def add_edge(self, out_node, out_port, in_node, in_port):
         'adds an edge beween out_node and in_node at ports out_port and in_port'
+        if out_node not in self.nodes:
+            raise Exception("Creating connction to node {} that doesn't exist".format(out_node))
+        elif in_node not in self.nodes:
+            raise Exception("Creating connction to node {} that doesn't exist".format(in_node))
         edge = {'from': {'node': out_node,
                          'port': out_port},
                 'to': {'node': in_node,
