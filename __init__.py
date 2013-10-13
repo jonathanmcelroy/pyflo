@@ -4,9 +4,24 @@ File: __init__.py
 Author: Jonathan McElroy
 """
 
-
+from graph import Graph
 from component import Component
 from network import Network
+from port import Port
+
+class Display(Component):
+
+    def __init__(self):
+        self.in_ports  = {'in' : Port('in',  str)}
+        self.out_ports = {'out': Port('out', str)}
+
+        super().__init__()
+
+        @self.on_data('in')
+        def myPrint(data):
+            print(data)
+            if self.out_ports['out'].is_attached():
+                self.send('out', data)
 
 def init_data(port, data):
     yield from port.send(data)
@@ -15,14 +30,16 @@ def send_data(node, port, data):
     yield from node.out_ports[port].send(data)
 
 if __name__ == "__main__":
-    '''graph = Graph('graph')
-    graph.add_node('hello', 'comp')
-    graph.add_node('nothin', 'nothin')
-    graph.add_edge('nothin', 'out', 'hello', 'in')
-    print(graph.nodes)
-    print(graph.edges)'''
+    graph = Graph('graph')
 
-    network = Network()
+    graph.add_node('d1', Display)
+    graph.add_node('d2', Display)
+
+    graph.add_edge('d1', 'out', 'd2', 'in')
+
+    graph.add_initializer('hello', 'd1', 'in')
+
+    network = Network(graph)
     network.run()
 
     #port = Port('out')
