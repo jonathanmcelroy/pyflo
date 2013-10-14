@@ -8,21 +8,23 @@ class Graph:
         self.nodes = {}
         self.edges = {}
         self.initializers = {}
-        self.exports = {}
     
     def add_node(self, name, component):
         'adds a node to the graph with name name.'
         self.nodes[name] = {'name':name,
                             'component':component}
         self.edges[name] = {}
+        self.initializers[name] = {}
 
     def remove_node(self, name):
         'removes a node with from the graph.'
         if name in self.nodes:
             del self.nodes[name]
-            for edge in self.edges[name].values():
-                del self.edges[edge['from']['node']][edge['from']['port']]
-                del self.edges[edge['to']['node']][edge['to']['port']]
+            for port in tuple(self.edges[name].keys()):
+                self.remove_edge(name, port)
+            for port in tuple(self.initializers[name].keys()):
+                self.remove_initializer(name, port)
+            
 
     def get_node(self, name, default=None):
         "returns the node with name name"
@@ -56,7 +58,7 @@ class Graph:
         'adds an edge beween out_node and in_node at ports out_port and in_port'
         if out_node not in self.nodes:
             raise Exception("Creating connction to node {} that doesn't exist".format(out_node))
-        elif in_node not in self.nodes:
+        if in_node not in self.nodes:
             raise Exception("Creating connction to node {} that doesn't exist".format(in_node))
         edge = {'from': {'node': out_node,
                          'port': out_port},
@@ -72,13 +74,13 @@ class Graph:
             del self.edges[edge['from']['node']][edge['from']['port']]
             del self.edges[edge['to']['node']][edge['to']['port']]
 
-    def add_initializer(self, data, name, port):
+    def add_initial(self, data, node, port):
         """Adds an initial data signal"""
-        self.initializers[name, port] = {'from': {'data':data},
-                                         'to': {'node':name,
+        self.initializers[node][port] = {'from': {'data':data},
+                                         'to': {'node':node,
                                                 'port':port}}
 
-    def remove_initializer(self, node, port):
+    def remove_initial(self, node, port):
         """Removes initial data signal"""
-        if (node, port) in self.initializers:
-            del self.initializers[node, port]
+        if node in self.initializers and port in self.initializers[node]:
+            del self.initializers[node][port]

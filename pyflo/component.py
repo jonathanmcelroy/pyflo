@@ -3,6 +3,7 @@
 from functools import wraps
 import scheduler
 
+
 class Component:
     """Component for flows"""
     in_ports = {}
@@ -33,15 +34,17 @@ class Component:
                 self._call[self.in_ports[port]] = wrapper
             except KeyError:
                 raise Exception("You must specify an in_port name in the decorator")
-            return wrapper  
+            return wrapper
         return decorator
-    
+
     def send(self, port, data):
         #print('send', port, data)
         self._send_ports.add((port, data))
 
+
 def init_data(port, data):
     yield from port.send(data)
+
 
 def send_data(node, port, data):
     yield from node.out_ports[port].send(data)

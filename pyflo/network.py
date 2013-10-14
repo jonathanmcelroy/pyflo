@@ -38,8 +38,9 @@ class Network:
             for edge in ports.values():
                 self.add_edge(edge)
 
-        for initializer in self.graph.initializers.values():
-            self.add_initializer(initializer)
+        for port in self.graph.initializers.values():
+            for initializer in port.values():
+                self.add_initializer(initializer)
 
     def add_node(self, node):
         name = node['name']
